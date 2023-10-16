@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!-- <input type="file" name="" id="upload-word-list"> -->
+    <div></div>
+    <h1></h1>
+    <h2></h2>
+    <p></p>
+
+    <script>
+        // document.querySelector('#upload-word-list').addEventListener('change', (e) => {
+        //     // console.log(e.target.files);
+        //     let file = new FileReader();
+        // })
+        let words = [];
+        // let wordsArr = [];
+        let start = Date.now();
+        fetch('Input_02.txt')
+            .then(res => res.text())
+            .then(val => {
+                words = val.split("\r\n")
+                words.sort((a,b) => b.length - a.length)
+                // document.querySelector('div').innerHTML = `[${words}]`
+                // console.log(words)
+
+
+                const wordSet = new Set(words);
+                let longestCompoundWord = "";
+                let secondLongestCompoundWord = "";
+
+                function isCompoundWord(word, wordSet) {
+                    if (wordSet.has(word)) return true;
+                    // console.log(wordSet.has(word))
+
+                    for (let i = 1; i < word.length; i++) {
+                        const firstpart = word.slice(0, i);
+                        const secondpart = word.slice(i);
+
+                        console.log(wordSet.has(firstpart))
+                        // console.log(isCompoundWord(suffix, wordSet))
+                        if (wordSet.has(firstpart) && isCompoundWord(secondpart, wordSet)) {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }
+
+
+                //longest compounded word
+                for (const word of words) {
+                    wordSet.delete(word);
+                    if (isCompoundWord(word, wordSet)) {
+                        longestCompoundWord = word;
+                        break;
+                    }
+                }
+
+                console.log("Longest Compound Word:", longestCompoundWord);
+                
+                //second longest compounded word
+                for (const word of wordSet) {
+                    wordSet.delete(word);
+                    if (isCompoundWord(word, wordSet)) {
+                        secondLongestCompoundWord = word;
+                        break;
+                    }
+                }
+                
+                console.log("Second Longest Compound Word:", secondLongestCompoundWord);
+                
+                let timeTaken = Date.now() - start;
+                console.log("Execution time: " + timeTaken + " ms");
+                
+                document.querySelector('h1').innerText = `Longest Compounded word: `+longestCompoundWord
+                document.querySelector('h2').innerText = `Second Longest: ${secondLongestCompoundWord}`
+                document.querySelector('p').innerText = `Time taken: ${timeTaken} ms`
+
+            })
+
+    </script>
+</body>
+</html>
